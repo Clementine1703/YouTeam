@@ -4,16 +4,13 @@ from starlette.responses import RedirectResponse
 from contextlib import asynccontextmanager
 
 
-from backend.src.apps import users
+from src.apps import users
 
 from src.config.config import APP_NAME, VERSION
-from src.config.database import engine
+from src.config.database import engine, create_tables
 
 from src.apps.users import router, models
 # from src.routes.auth import main, models
-
-users.models.Base.metadata.create_all(bind=engine)
-# auth.models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI(
@@ -29,13 +26,13 @@ app.add_middleware(
     allow_credentials=True
 )
 
-@app.on_event("startup")
-async def startup():
-    await database.connect()
-
-@app.on_event("shutdown")
-async def shutdown():
-    await database.disconnect()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from src.apps.users.service import check_db_connection
+    await create_tables()
+    await check_db_connection()
+    yield
+    # Any shutdown code here
 
 app.include_router(users.router.router)
 
