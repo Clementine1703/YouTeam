@@ -6,7 +6,6 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from starlette.responses import RedirectResponse
 from contextlib import asynccontextmanager
 
-
 from apps.users.router import router as users_router
 from apps.auth.router import router as auth_router
 
@@ -14,7 +13,6 @@ from config.config import APP_NAME, VERSION
 from config.database import create_tables
 
 from apps.users import router, models
-# from src.routes.auth import main, models
 
 
 def swagger_monkey_patch(*args, **kwargs):
@@ -27,8 +25,7 @@ applications.get_swagger_ui_html = swagger_monkey_patch
 
 app = FastAPI(
     title=APP_NAME,
-    version=VERSION,
-    swagger_ui_oauth2_redirect_url="/auth"
+    version=VERSION
 )
 
 app.add_middleware(
@@ -47,4 +44,3 @@ async def lifespan(app: FastAPI):
 
 app.include_router(users_router)
 app.include_router(auth_router)
-
