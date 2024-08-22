@@ -1,6 +1,6 @@
 import os
 from datetime import timedelta
-from typing import Annotated
+from typing import Annotated, Dict
 
 import jwt
 from jose import JWTError
@@ -68,14 +68,17 @@ async def refresh_access_token(refresh_token: str) -> AccessToken:
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload: Dict = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
         if payload.get("refresh") is not True:
             raise credentials_exception
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-    except JWTError:
+    except jwt.InvalidTokenError as e:
         raise credentials_exception
+    except JWTError as e:
+        raise credentials_exception
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": username}, expires_delta=access_token_expires
