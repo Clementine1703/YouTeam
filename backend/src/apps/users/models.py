@@ -1,10 +1,13 @@
-from src.config.database import Base
-from sqlalchemy import Column, String, Integer
+from config.database import Base
+from sqlalchemy import Column, String, Integer, Boolean
 
 
 class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(length=50))
-    mail = Column(String(length=100))
+    username = Column(String(length=50))
+    email = Column(String(length=100))
+    full_name = Column(String(length=50))
+    hashed_password = Column(String)
+    disabled = Column(Boolean())

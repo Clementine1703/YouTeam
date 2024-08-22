@@ -1,5 +1,13 @@
-from fastapi import APIRouter
-from fastapi.responses import ORJSONResponse
+from fastapi import APIRouter, Depends
+from fastapi.responses import Response
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from utils.db import get_async_session
+
+from .service import UserService
+
+from apps.users.schemas import User, UserCreate
 
 
 router = APIRouter(
@@ -9,21 +17,7 @@ router = APIRouter(
 )
 
 
-@router.get("/")
-async def get_all_users():
-    return ORJSONResponse([{"hello": "world"}])
-# @router.get("/")
-# async def get_all_users(user: User = 
-# Depends(get_current_active_user),
-#                         db: Session = Depends(get_db)):
-#     """
-#     # Get a list of all users
-
-#     **Access:**
-#     - Admins get a list of all users.
-#     - Users with lower rights get a list with only the enabled users.
-#     """
-#     if user.super_admin:
-#         return get_users_admin(db=db)
-#     else:
-#         return get_users(db=db)
+@router.post("/", response_model=User)
+async def create_user(user: UserCreate, session: AsyncSession = Depends(get_async_session)):
+    service = UserService(session)
+    return await service.create_user(user)
