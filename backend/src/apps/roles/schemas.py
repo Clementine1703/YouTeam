@@ -2,23 +2,25 @@ from typing import List
 
 from pydantic import BaseModel, ConfigDict
 
+from apps.permissions.schemas import PermissionInfoSchema
 
-class RoleBase(BaseModel):
+
+class RoleBaseSchema(BaseModel):
     title: str
     internal_name: str
 
 
-class RoleCreate(RoleBase):
+class RoleCreateSchema(RoleBaseSchema):
     permissions_ids: List[int]
 
 
-class RoleInfo(RoleBase):
+class RoleInfoSchema(RoleBaseSchema):
     id: int | None
-    permissions: list | None
+    permissions: List[PermissionInfoSchema] | None
     model_config = ConfigDict(from_attributes=True)
 
 
-class RoleUpdate(BaseModel):
+class RoleUpdateSchema(BaseModel):
     title: str | None = None
     internal_name: str | None = None
     permissions_ids: List[int] | None = None

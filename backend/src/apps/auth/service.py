@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from utils.db import get_async_session
 
 from apps.users.models import User
-from .schemas import TokenData
+from .schemas import TokenDataSchema
 
 from config.auth import ALGORITHM, SECRET_KEY
 
@@ -65,6 +65,7 @@ def create_refresh_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.utcnow() + timedelta(days=7)
     to_encode.update({"exp": expire, "refresh": True})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    print(encoded_jwt, 'GGG')
     return encoded_jwt
 
 
@@ -79,7 +80,7 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        token_data = TokenDataSchema(username=username)
     except InvalidTokenError:
         raise credentials_exception
     user = await get_user(session, username=token_data.username)

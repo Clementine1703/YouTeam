@@ -18,8 +18,8 @@ from utils.db import get_async_session
 from .service import authenticate_user, get_current_active_user,\
       create_access_token, create_refresh_token
 
-from .schemas import AccessToken, Tokens
-from apps.users.schemas import UserBase
+from .schemas import AccessTokenSchema, TokensSchema
+from apps.users.schemas import UserBaseSchema
 
 from config.auth import ALGORITHM, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES
 
@@ -34,7 +34,7 @@ router = APIRouter(
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     session: AsyncSession = Depends(get_async_session)
-) -> Tokens:
+) -> TokensSchema:
     user = await authenticate_user(session, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
@@ -50,18 +50,18 @@ async def login_for_access_token(
     refresh_token = create_refresh_token(
         data={"sub": user.username}, expires_delta=refresh_token_expires
     )
-    return Tokens(access_token=access_token, token_type="bearer", refresh_token=refresh_token)
+    return TokensSchema(access_token=access_token, token_type="bearer", refresh_token=refresh_token)
 
 
-@router.get("/users/me/", response_model=UserBase)
+@router.get("/users/me/", response_model=UserBaseSchema)
 async def read_users_me(
-    current_user: Annotated[UserBase, Depends(get_current_active_user)],
+    current_user: Annotated[UserBaseSchema, Depends(get_current_active_user)],
 ):
     return current_user
 
 
 @router.post("/refresh")
-async def refresh_access_token(refresh_token: str) -> AccessToken:
+async def refresh_access_token(refresh_token: str) -> AccessTokenSchema:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -84,4 +84,4 @@ async def refresh_access_token(refresh_token: str) -> AccessToken:
         data={"sub": username}, expires_delta=access_token_expires
     )
     
-    return AccessToken(access_token=access_token, token_type="bearer")
+    return AccessTokenSchema(access_token=access_token, token_type="bearer")

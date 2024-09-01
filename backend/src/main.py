@@ -2,12 +2,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import applications
 from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi_pagination import add_pagination
 
 from starlette.responses import RedirectResponse
 from contextlib import asynccontextmanager
 
 from apps.users.router import router as users_router
 from apps.auth.router import router as auth_router
+from apps.roles.router import router as roles_router
+from apps.permissions.router import router as permissions_router
 
 from config.config import APP_NAME, VERSION
 from config.database import create_tables
@@ -44,3 +47,7 @@ async def lifespan(app: FastAPI):
 
 app.include_router(users_router)
 app.include_router(auth_router)
+app.include_router(roles_router)
+app.include_router(permissions_router)
+
+add_pagination(app)

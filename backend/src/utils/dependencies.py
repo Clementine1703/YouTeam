@@ -2,10 +2,11 @@ from fastapi import HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
-from src.apps.auth.service import get_current_user
-from utils.db import get_async_session
-from src.apps.users.models import User
+from apps.auth.service import get_current_user
+from apps.users.models import User
 from apps.permissions.models import Permission
+
+from utils.db import get_async_session
 
 
 async def check_permissions(user_id: int, required_permissions: list[str], session: AsyncSession):
@@ -17,13 +18,13 @@ async def check_permissions(user_id: int, required_permissions: list[str], sessi
         raise HTTPException(status_code=404, detail="Пользователь не найден")
 
     # Получаем роли пользователя
-    user_role = user.role
-    if not user_role:
+    role = user.role
+    if not role:
         raise HTTPException(status_code=403, detail="У пользователя нет ролей")
 
     # Получаем разрешения всех ролей пользователя
     user_permissions = set()
-    for permission in user_role.permissions:
+    for permission in role.permissions:
         user_permissions.add(permission.internal_name)
 
     if not user_permissions:

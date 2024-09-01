@@ -1,20 +1,21 @@
 from pydantic import BaseModel, ConfigDict
 
 
-class PermissionBase(BaseModel):
+class PermissionBaseSchema(BaseModel):
     internal_name: str
     title: str | None = None
 
 
-class PermissionCreate(PermissionBase):
+class PermissionCreateSchema(PermissionBaseSchema):
     pass
 
 
-class PermissionInfo(PermissionBase):
+class PermissionInfoSchema(PermissionBaseSchema):
     id: int | None
+    internal_name: str
     model_config = ConfigDict(from_attributes=True)
 
 
-class PermissionUpdate(BaseModel):
+class PermissionUpdateSchema(BaseModel):
     internal_name: str | None = None
     title: str | None = None

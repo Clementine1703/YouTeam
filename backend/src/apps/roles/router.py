@@ -7,10 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from utils.db import get_async_session
 from .service import RoleService
 from .models import RoleFilter
-from .schemas import RoleCreate, RoleUpdate, RoleInfo
+from .schemas import RoleCreateSchema, RoleUpdateSchema, RoleInfoSchema
 
 # TODO
-from src.utils.dependencies import require_permissions
+from utils.dependencies import require_permissions
 
 
 router = APIRouter(
@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=Page[RoleInfo])
+@router.get("/", response_model=Page[RoleInfoSchema])
 async def get_all_roles(
     role_filter: RoleFilter = FilterDepends(RoleFilter),
     page: int = 1,
@@ -34,9 +34,9 @@ async def get_all_roles(
     return paginate(filtered_roles)
 
 
-@router.post("/", response_model=RoleInfo)
+@router.post("/", response_model=RoleInfoSchema)
 async def create_role(
-    data_for_create: RoleCreate,
+    data_for_create: RoleCreateSchema,
     session: AsyncSession = Depends(get_async_session)
 ):
     service = RoleService(session)
@@ -44,10 +44,10 @@ async def create_role(
     return new_role
 
 
-@router.patch("/{role_id}", response_model=RoleInfo)
+@router.patch("/{role_id}", response_model=RoleInfoSchema)
 async def update_role(
     role_id: int,
-    data_for_update: RoleUpdate,
+    data_for_update: RoleUpdateSchema,
     session: AsyncSession = Depends(get_async_session)
 ):
     service = RoleService(session)
@@ -65,7 +65,7 @@ async def delete_roles(
     return {"ok": True}
 
 
-@router.get("/{role_id}", response_model=RoleInfo)
+@router.get("/{role_id}", response_model=RoleInfoSchema)
 async def get_role(
     role_id: int,
     session: AsyncSession = Depends(get_async_session)

@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from utils.db import get_async_session
 from .service import PermissionService
 from .models import Permission, PermissionFilter
-from .schemas import PermissionCreate, PermissionUpdate, PermissionInfo
+from .schemas import PermissionCreateSchema, PermissionUpdateSchema, PermissionInfoSchema
 
 
 router = APIRouter(
@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=Page[PermissionInfo])
+@router.get("/", response_model=Page[PermissionInfoSchema])
 async def get_all_permissions(
     permission_filter: PermissionFilter = FilterDepends(PermissionFilter),
     page: int = 1,
@@ -31,9 +31,9 @@ async def get_all_permissions(
     return paginate(filtered_permissions)
 
 
-@router.post("/", response_model=Permission)
+@router.post("/", response_model=PermissionInfoSchema)
 async def create_permission(
-    data_for_create: PermissionCreate,
+    data_for_create: PermissionCreateSchema,
     session: AsyncSession = Depends(get_async_session)
 ):
     service = PermissionService(session)
@@ -41,10 +41,10 @@ async def create_permission(
     return new_permission
 
 
-@router.patch("/{permission_id}", response_model=Permission)
+@router.patch("/{permission_id}", response_model=PermissionInfoSchema)
 async def update_permission(
     permission_id: int,
-    data_for_update: PermissionUpdate,
+    data_for_update: PermissionUpdateSchema,
     session: AsyncSession = Depends(get_async_session)
 ):
     service = PermissionService(session)
@@ -62,7 +62,7 @@ async def delete_permissions(
     return {"ok": True}
 
 
-@router.get("/{permission_id}", response_model=PermissionInfo)
+@router.get("/{permission_id}", response_model=PermissionInfoSchema)
 async def get_permission(
     permission_id: int,
     session: AsyncSession = Depends(get_async_session)
