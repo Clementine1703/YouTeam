@@ -65,7 +65,6 @@ def create_refresh_token(data: dict, expires_delta: timedelta | None = None):
         expire = datetime.utcnow() + timedelta(days=7)
     to_encode.update({"exp": expire, "refresh": True})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    print(encoded_jwt, 'GGG')
     return encoded_jwt
 
 
