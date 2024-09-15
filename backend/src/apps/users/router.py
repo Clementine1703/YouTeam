@@ -7,7 +7,7 @@ from utils.db import get_async_session
 
 from .service import UserService
 
-from apps.users.schemas import UserSchema, UserCreateSchema
+from apps.users.schemas import UserInfoSchema, UserCreateSchema
 
 
 router = APIRouter(
@@ -17,7 +17,7 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=UserSchema)
-async def create_user(user: UserCreateSchema, session: AsyncSession = Depends(get_async_session)):
+@router.post("/", response_model=UserInfoSchema)
+async def create(user: UserCreateSchema, session: AsyncSession = Depends(get_async_session)):
     service = UserService(session)
-    return await service.create_user(user)
+    return await service.create(user)

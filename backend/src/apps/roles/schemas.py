@@ -11,7 +11,7 @@ class RoleBaseSchema(BaseModel):
 
 
 class RoleCreateSchema(RoleBaseSchema):
-    permissions_ids: List[int]
+    permission_ids: List[int]
 
 
 class RoleInfoSchema(RoleBaseSchema):
@@ -23,4 +23,4 @@ class RoleInfoSchema(RoleBaseSchema):
 class RoleUpdateSchema(BaseModel):
     title: str | None = None
     internal_name: str | None = None
-    permissions_ids: List[int] | None = None
+    permission_ids: List[int] | None = None

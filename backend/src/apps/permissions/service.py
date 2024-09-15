@@ -11,12 +11,12 @@ class PermissionService:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
     
-    async def get_permission_filter(self, permission_filter: PermissionFilter, sortBy: str, sortDesc: bool) -> list[PermissionInfoSchema]:
+    async def get_filter(self, filter: PermissionFilter, sortBy: str, sortDesc: bool) -> list[PermissionInfoSchema]:
         query = select(Permission)
-        filtered_data = await permission_filter.apply_filters(query, sortBy, sortDesc, self.session)
+        filtered_data = await filter.apply_filters(query, sortBy, sortDesc, self.session)
         return filtered_data
     
-    async def create_permission(self, permission_create: PermissionCreateSchema) -> Permission:
+    async def create(self, permission_create: PermissionCreateSchema) -> Permission:
         statement = select(Permission).where(Permission.internal_name == permission_create.internal_name)
         result = await self.session.execute(statement)
         existing_permission = result.scalars().first()
@@ -29,7 +29,7 @@ class PermissionService:
 
         return new_permission
     
-    async def update_permission(self, permission_id: int, data_for_update: PermissionUpdateSchema) -> Permission:
+    async def update(self, permission_id: int, data_for_update: PermissionUpdateSchema) -> Permission:
         statement = select(Permission).where(Permission.id == permission_id)
         result = await self.session.execute(statement)
         permission = result.scalars().first()
@@ -47,8 +47,8 @@ class PermissionService:
             raise HTTPException(status_code=404, detail="Вы пытаетесь установить уже существующее значение unique полю")
         return permission
     
-    async def delete_permissions(self, permissions_ids: list[int]) -> None:
-        statement = select(Permission).where(Permission.id.in_(permissions_ids))
+    async def delete(self, permission_ids: list[int]) -> None:
+        statement = select(Permission).where(Permission.id.in_(permission_ids))
         result = await self.session.execute(statement)
         permissions = result.scalars().all()
 
@@ -59,7 +59,7 @@ class PermissionService:
             await self.session.delete(permission)
         await self.session.commit()
 
-    async def get_permission(self, permission_id: int) -> PermissionInfoSchema:
+    async def get(self, permission_id: int) -> PermissionInfoSchema:
         statement = select(Permission).where(Permission.id == permission_id)
         result = await self.session.execute(statement)
         permission = result.scalars().first()

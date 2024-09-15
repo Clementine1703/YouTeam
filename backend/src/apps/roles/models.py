@@ -1,8 +1,6 @@
-from typing import Optional
-
 from fastapi import HTTPException
 
-from sqlalchemy import Column, Integer, String, asc, desc
+from sqlalchemy import Column, Integer, String, ForeignKey, asc, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Query, selectinload, relationship
 
@@ -15,18 +13,26 @@ from .schemas import RoleInfoSchema
 from apps.permissions.models import Permission, RolePermissionLink
 
 
+class UserRoleLink(Base):
+    __tablename__ = 'user_role_link'
+    __table_args__ = {'extend_existing': True}
+    user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
+    role_id = Column(Integer, ForeignKey('role.id'), primary_key=True)
+    extend_existing=True
+
+
 class Role(Base):
     __tablename__ = 'role'
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     internal_name = Column(String, unique=True, index=True)
-    user = relationship("User", back_populates="role", uselist=False)
+    users = relationship("User", secondary=UserRoleLink.__table__, back_populates="roles", lazy="selectin")
     permissions = relationship("Permission", secondary=RolePermissionLink.__table__, back_populates="roles", lazy="selectin")
 
 
 class RoleFilter(Filter):
-    title: Optional[str] = None
-    permission_internal_name: Optional[str] = None
+    title: str | None = None
+    permission_internal_name: str | None = None
 
     class Constants(Filter.Constants):
         model = Role

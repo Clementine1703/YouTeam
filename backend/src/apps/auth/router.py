@@ -1,4 +1,3 @@
-import os
 from datetime import timedelta
 from typing import Annotated, Dict
 
@@ -19,6 +18,7 @@ from .service import authenticate_user, get_current_active_user,\
       create_access_token, create_refresh_token
 
 from .schemas import AccessTokenSchema, TokensSchema
+
 from apps.users.schemas import UserBaseSchema
 
 from config.auth import ALGORITHM, SECRET_KEY, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES
@@ -53,11 +53,13 @@ async def login_for_access_token(
     return TokensSchema(access_token=access_token, token_type="bearer", refresh_token=refresh_token)
 
 
+
 @router.get("/users/me/", response_model=UserBaseSchema)
 async def read_users_me(
     current_user: Annotated[UserBaseSchema, Depends(get_current_active_user)],
 ):
     return current_user
+
 
 
 @router.post("/refresh")

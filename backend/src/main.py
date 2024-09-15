@@ -4,7 +4,6 @@ from fastapi import applications
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi_pagination import add_pagination
 
-from starlette.responses import RedirectResponse
 from contextlib import asynccontextmanager
 
 from apps.users.router import router as users_router
@@ -14,8 +13,6 @@ from apps.permissions.router import router as permissions_router
 
 from config.config import APP_NAME, VERSION
 from config.database import create_tables
-
-from apps.users import router, models
 
 
 def swagger_monkey_patch(*args, **kwargs):

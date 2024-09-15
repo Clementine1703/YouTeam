@@ -3,12 +3,8 @@ from typing import Optional
 from fastapi import HTTPException
 
 from sqlalchemy import Column, Integer, String, ForeignKey, asc, desc
-from sqlalchemy.future import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Query, Session, \
-                           joinedload, relationship
-
-from pydantic import BaseModel
+from sqlalchemy.orm import Query, relationship
 
 from fastapi_filter.contrib.sqlalchemy import Filter
 
@@ -35,8 +31,8 @@ class Permission(Base):
 
 
 class PermissionFilter(Filter):
-    internal_name: Optional[str] = None
-    title: Optional[str] = None
+    internal_name: str | None = None
+    title: str | None = None
 
     async def apply_filters(self, query: Query, sortBy: str, sortDesc: bool, session: AsyncSession) -> list[PermissionInfoSchema]:
 

@@ -22,7 +22,7 @@ router = APIRouter(
 
 @router.get("/", response_model=Page[RoleInfoSchema])
 async def get_all_roles(
-    role_filter: RoleFilter = FilterDepends(RoleFilter),
+    filter: RoleFilter = FilterDepends(RoleFilter),
     page: int = 1,
     size: int = 50,
     sortBy: str = "title",
@@ -30,46 +30,46 @@ async def get_all_roles(
     session: AsyncSession = Depends(get_async_session)
 ):
     service = RoleService(session)
-    filtered_roles = await service.get_role_filter(role_filter, sortBy, sortDesc)
+    filtered_roles = await service.get_filter(filter, sortBy, sortDesc)
     return paginate(filtered_roles)
 
 
 @router.post("/", response_model=RoleInfoSchema)
-async def create_role(
+async def create(
     data_for_create: RoleCreateSchema,
     session: AsyncSession = Depends(get_async_session)
 ):
     service = RoleService(session)
-    new_role = await service.create_role(data_for_create)
+    new_role = await service.create(data_for_create)
     return new_role
 
 
 @router.patch("/{role_id}", response_model=RoleInfoSchema)
-async def update_role(
+async def update(
     role_id: int,
     data_for_update: RoleUpdateSchema,
     session: AsyncSession = Depends(get_async_session)
 ):
     service = RoleService(session)
-    updated_role = await service.update_role(role_id, data_for_update)
+    updated_role = await service.update(role_id, data_for_update)
     return updated_role
 
 
 @router.delete("/")
-async def delete_roles(
+async def delete(
     role_ids: list[int],
     session: AsyncSession = Depends(get_async_session)
 ):
     service = RoleService(session)
-    await service.delete_roles(role_ids)
+    await service.delete(role_ids)
     return {"ok": True}
 
 
 @router.get("/{role_id}", response_model=RoleInfoSchema)
-async def get_role(
+async def get(
     role_id: int,
     session: AsyncSession = Depends(get_async_session)
 ):
     service = RoleService(session)
-    role = await service.get_role(role_id)
+    role = await service.get(role_id)
     return role
